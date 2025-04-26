@@ -1,4 +1,4 @@
-name: Deploy Terraform to Azure using OIDC
+name: Deploy Terraform and Python App to Azure using OIDC
 
 on:
   push:
@@ -56,3 +56,16 @@ jobs:
             -var="client_id=${{ secrets.AZURE_CLIENT_ID }}" \
             -var="tenant_id=${{ secrets.AZURE_TENANT_ID }}" \
             -var="subscription_id=${{ secrets.AZURE_SUBSCRIPTION_ID }}"
+
+      - name: Prepare Python app deployment files
+        run: |
+          mkdir deploy_folder
+          cp app.py requirements.txt Procfile deploy_folder/
+
+      - name: Set up Azure CLI
+        uses: azure/setup-azurecli@v1
+
+      - name: Deploy Python App to Azure WebApp
+        run: |
+          cd deploy_folder
+          az webapp up --name <your-app-name> --resource-group <your-resource-group> --plan <your-app-service-plan> --location <your-region> --sku <your-sku>
