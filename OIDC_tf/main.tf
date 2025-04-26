@@ -1,28 +1,37 @@
+provider "azurerm" {
+  features {}
+}
+
+resource "random_id" "unique" {
+  byte_length = 4
+}
+
 resource "azurerm_resource_group" "rg" {
-  name     = "github-oidc-rg"
+  name     = "rg-github-oidc-${random_id.unique.hex}"
   location = "East US"
 }
 
-resource "azurerm_app_service_plan" "plan" {
-  name                = "github-oidc-plan"
+resource "azurerm_service_plan" "plan" {
+  name                = "serviceplan-${random_id.unique.hex}"
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
-  kind                = "Linux"
-  reserved            = true
-
-  sku {
-    tier = "Basic"
-    size = "B1"
-  }
+  sku_name            = "F1" # Free tier
+  os_type             = "Linux"
 }
 
 resource "azurerm_linux_web_app" "webapp" {
   name                = "github-oidc-app-${random_id.unique.hex}"
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
-  service_plan_id     = azurerm_app_service_plan.plan.id
+  service_plan_id     = azurerm_service_plan.plan.id
 
   site_config {
-    linux_fx_version = "PYTHON|3.11"
+    application_stack {
+      python_version = "3.9" # Example: setting a Python app
+    }
+  }
+
+  app_settings = {
+    "WEBSITE_RUN_FROM_PACKAGE" = "1"
   }
 }
