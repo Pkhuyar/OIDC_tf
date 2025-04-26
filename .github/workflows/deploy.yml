@@ -21,7 +21,7 @@ jobs:
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: 1.7.5 # or your version
+          terraform_version: 3.0 # or your version
 
       - name: Azure Login with OIDC
         uses: azure/login@v2
@@ -62,8 +62,9 @@ jobs:
           mkdir deploy_folder
           cp app.py requirements.txt Procfile deploy_folder/
 
-      - name: Set up Azure CLI
-        uses: azure/setup-azurecli@v1
+      - name: Install Azure CLI
+        run: |
+          curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
 
       - name: Deploy Python App to Azure WebApp
         run: |
