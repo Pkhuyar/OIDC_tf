@@ -1,7 +1,3 @@
-provider "azurerm" {
-  features {}
-}
-
 resource "random_id" "unique" {
   byte_length = 4
 }
@@ -15,7 +11,7 @@ resource "azurerm_service_plan" "plan" {
   name                = "serviceplan-${random_id.unique.hex}"
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
-  sku_name            = "F1" # Free tier
+  sku_name            = "F1"
   os_type             = "Linux"
 }
 
@@ -27,7 +23,7 @@ resource "azurerm_linux_web_app" "webapp" {
 
   site_config {
     application_stack {
-      python_version = "3.9" # Example: setting a Python app
+      python_version = "3.9"
     }
   }
 
